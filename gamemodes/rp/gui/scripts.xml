@@ -1,0 +1,4 @@
+<server>
+	<script src="base.nut" type="client" />
+	<script src="sprite.nut" type="client" />
+</server>

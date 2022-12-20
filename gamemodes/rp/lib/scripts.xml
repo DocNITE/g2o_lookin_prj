@@ -1,0 +1,4 @@
+<server>
+	<import src="ANSI_UTF-8-main/scripts.xml" />
+	<script src="json.nut" type="shared" />
+</server>

@@ -1,0 +1,4 @@
+<server>
+	<script src="windows1251_to_utf8.nut" type="shared" />
+	<script src="utf8_to_windows1251.nut" type="shared" />
+</server>

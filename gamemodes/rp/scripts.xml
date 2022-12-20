@@ -1,0 +1,25 @@
+<server>
+	<!--<script src="client-scripts/main.nut" type="client" />-->
+	<!-- Говно -->
+	<script src="________________________.nut" type="shared" />
+	<script src="debugger.nut" type="shared" />
+
+	<!-- Library -->
+	<import src="lib/scripts.xml" />
+
+	<!-- Config -->
+	<script src="packetId.nut" type="shared" />
+	<script src="constants.nut" type="shared" />
+	<script src="config.nut" type="shared" />
+
+	<!-- MyGui -->>
+	<import src="gui/scripts.xml" />
+
+	<!-- -->
+	<script src="packetListener.nut" type="shared" />
+	<!--<script src="fileMan.nut" type="shared" />-->
+	<script src="character.nut" type="shared" />
+	<script src="player.nut" type="shared" />
+	<script src="commands.nut" type="shared" />
+	<script src="main.nut" type="shared" />
+</server>
