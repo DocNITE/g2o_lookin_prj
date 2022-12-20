@@ -9,14 +9,16 @@ class Base {
     }
 
     function setParent(obj) {
-        // TODO: Delete child
+        if (parent != null) {
+            parent.removeChild(this);
+        }
         parent = obj;
     }
 
     function addChild(obj) {
         if (obj == null) return;
         // rewrite child parent & push
-        obj.parent = this;
+        obj.setParent(this);
         childs.push(obj);
     }
 
@@ -25,12 +27,12 @@ class Base {
         // (?)
         if (obj == null) {
             local _id = childs.len()-1;
-            childs[_id].parent = null;
+            childs[_id].setParent(null);
             childs.remove(_id);
         } else {
             for(local i = 0; i < childs.len(); i++) {
                 if (childs[i] == obj) {
-                    childs[i].parent = null;
+                    childs[i].setParent(null);
                     childs.remove(i);
                 }
             }
