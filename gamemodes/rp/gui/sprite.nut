@@ -77,6 +77,7 @@ class Sprite extends Base {
 
         local _drawText = "";
         local _drawShit = Draw(0, 0, "");
+        _drawShit.setScale(1*scale*guiScale, 1*scale*guiScale);
         _drawShit.visible = false;
 
         //local _inProcess = false;
@@ -100,6 +101,48 @@ class Sprite extends Base {
 
         blit(); //repos();
     }
+    function parse(text, colorParserEnabled = true)
+	{
+		local info = []
+
+		local expression = "\\n"
+		expression += (colorParserEnabled) ? "|" + @"\[#[0-9_a-f_A-F]{6,}]" : ""
+
+		local regex = regexp(expression)
+
+		local currentPosition = 0
+		local currentColor = m_color
+
+		//m_text = "" !!!!!!!!!!!!!
+
+		local result = null
+		while (result = regex.search(text, currentPosition))
+		{
+			local isEOLFound = (result.end - result.begin == 1)
+			local endPosition = (isEOLFound) ? result.end - 1 : result.begin
+
+			local slicedText = text.slice(currentPosition, endPosition)
+
+			if (slicedText != "" || isEOLFound)
+			{
+				info.push({text = slicedText, color = currentColor, newLine = isEOLFound})
+				//m_text += slicedText !!!!!!!!!!!!!
+			}
+
+			currentPosition = result.end
+			currentColor = (isEOLFound) ? currentColor : hexToRgb(text.slice(result.begin + 2, result.end - 1))
+		}
+
+		local slicedText = text.slice(currentPosition, text.len())
+
+		//m_text += slicedText !!!!!!!!!!!!!
+		info.push({text = slicedText, color = currentColor, newLine = false})
+
+		if (info.len())
+			return info
+
+		return null
+	}
     /**
      * Update drawable element
      */
@@ -150,6 +193,7 @@ class Sprite extends Base {
             local _oldY = m_pos.y-textPadding;
             foreach (line in text) {
                 local _Draw = Draw(0,0,line);
+                _Draw.setScale(1*scale*guiScale, 1*scale*guiScale);
                 _Draw.setPositionPx(m_pos.x+textPadding, _oldY + textPadding);
                 _oldY = _oldY + (_Draw.heightPx);
                 _Draw.visible = visible;
@@ -194,7 +238,7 @@ class Sprite extends Base {
             for(local i = 0; i < m_draws.len(); i++) {
                 local _Draw = m_draws[i];
                 _Draw.setPositionPx(0, 0);
-                _Draw.setScale(scale);
+                _Draw.setScale(1*scale*guiScale, 1*scale*guiScale);
                 _Draw.setPositionPx(m_pos.x+textPadding, _oldY + textPadding);
                 _oldY = _oldY + (_Draw.heightPx*_pading);
 
