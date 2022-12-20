@@ -16,6 +16,7 @@ class Sprite extends Base {
 
     image   = null;
     text    = null;
+    font    = "Font_Old_10_White_Hi.tga";
 
     textPadding = 4;
 
@@ -78,6 +79,7 @@ class Sprite extends Base {
         local _drawText = "";
         local _drawShit = Draw(0, 0, "");
         _drawShit.setScale(1*scale*guiScale, 1*scale*guiScale);
+        _drawShit.font = font;
         _drawShit.visible = false;
 
         //local _inProcess = false;
@@ -193,6 +195,7 @@ class Sprite extends Base {
             local _oldY = m_pos.y-textPadding;
             foreach (line in text) {
                 local _Draw = Draw(0,0,line);
+                _Draw.font = font;
                 _Draw.setScale(1*scale*guiScale, 1*scale*guiScale);
                 _Draw.setPositionPx(m_pos.x+textPadding, _oldY + textPadding);
                 _oldY = _oldY + (_Draw.heightPx);
@@ -238,6 +241,7 @@ class Sprite extends Base {
             for(local i = 0; i < m_draws.len(); i++) {
                 local _Draw = m_draws[i];
                 _Draw.setPositionPx(0, 0);
+                _Draw.font = font;
                 _Draw.setScale(1*scale*guiScale, 1*scale*guiScale);
                 _Draw.setPositionPx(m_pos.x+textPadding, _oldY + textPadding);
                 _oldY = _oldY + (_Draw.heightPx*_pading);
