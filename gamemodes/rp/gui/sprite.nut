@@ -1,5 +1,20 @@
 guiScale <- 1;
 
+class RGBA {
+    # mutable:
+    r = 255;
+    g = 255;
+    b = 255;
+    alpha = 255;
+
+    constructor(_r, _g, _b, _alpha = 255) {
+        r = _r;
+        g = _g;
+        b = _b;
+        alpha = _alpha;
+    }
+}
+
 class Sprite extends Base {
     # private:
     m_textures = [];
@@ -20,7 +35,8 @@ class Sprite extends Base {
 
     textPadding = 4;
 
-    palete = [255, 255, 255, 255];
+    color = RGBA(255, 255, 255);
+    textColor = RGBA(255, 255, 255);
 
     /**
      * Constructor
@@ -74,37 +90,56 @@ class Sprite extends Base {
         text = [];
 
         local _winWidth = size.width*guiScale*scale + textPadding;
-        local txt = split(str, " ");
+        local txt = parse(str); //split(str, " ");
 
-        local _drawText = "";
+        //local _drawText = "";
         local _drawShit = Draw(0, 0, "");
+
         _drawShit.setScale(1*scale*guiScale, 1*scale*guiScale);
         _drawShit.font = font;
         _drawShit.visible = false;
 
         //local _inProcess = false;
         foreach (elem in txt) {
-            _drawShit.text = _drawShit.text + elem + " ";
+            _drawShit.text = _drawShit.text + elem.text// + " ";
 
-            if (_drawShit.widthPx <= _winWidth) {
-                _drawText = _drawText + elem + " ";
+            if (_drawShit.widthPx <= _winWidth-textPadding) {
+                //_drawText = _drawText + elem.text// + " ";
 
+                text.push({text = elem.text, color = elem.color, newLine = false});
                 //_inProcess = true;
             } else {
-                text.push(_drawText);
+                text.push({text = elem.text, color = elem.color, newLine = true});
 
-                _drawText = elem + " ";
-                _drawShit.text = elem + " ";
+                //_drawText = elem.text// + " ";
+                _drawShit.text = elem.text// + " ";
 
                 //_inProcess = false;
             }
         }
-        text.push(_drawText);
+        //text.push(_drawText);
 
         blit(); //repos();
     }
+    /**
+     * Set new color
+     * @param {RGBA} color
+     */
+    function setColor(clr, g = null, b = null, alpha = null) {
+        if (!clr) return;
+        // So, check if we want set RGBA class for color
+        if (clr instanceof RGBA) {
+            color = clr;
+        } else {
+            color = RGBA(clr, g, b, alpha);
+        }
+        // Update
+        blit();
+    }
+    // by Patrix code
     function parse(text, colorParserEnabled = true)
 	{
+        debug("(Class|Sprite): Parsing text start!")
 		local info = []
 
 		local expression = "\\n"
@@ -113,7 +148,7 @@ class Sprite extends Base {
 		local regex = regexp(expression)
 
 		local currentPosition = 0
-		local currentColor = m_color
+		local currentColor = {r = textColor.r, g = textColor.g, b = textColor.b};
 
 		//m_text = "" !!!!!!!!!!!!!
 
@@ -184,8 +219,8 @@ class Sprite extends Base {
             local _Texture = Texture(0, 0,anx(size.width*guiScale*scale), any(size.height*guiScale*scale), image)
             _Texture.setPositionPx(m_pos.x, m_pos.y);
             _Texture.visible = visible;
-            _Texture.setColor(palete[0], palete[1], palete[2]);
-            _Texture.alpha = palete[3];
+            _Texture.setColor(color.r, color.g, color.b);
+            _Texture.alpha = color.alpha;
             m_textures.push(_Texture);
         }
         debug("(Class|Sprite): Make background...")
@@ -193,15 +228,27 @@ class Sprite extends Base {
         if (text) {
             //local _pading = 1;
             local _oldY = m_pos.y-textPadding;
+            local _oldDraw = null;
+            local _oldX = m_pos.x+textPadding;
             foreach (line in text) {
-                local _Draw = Draw(0,0,line);
+                local _Draw = Draw(0,0,line.text);
+                // Remembet that
+                if (_oldDraw) {
+                    _oldX = _oldX + _oldDraw.widthPx;
+                }
+                _oldDraw = _Draw;
+                // other logic
+                if (line.newLine) {
+                    _oldY = _oldY + (_Draw.heightPx);
+                    _oldX = m_pos.x+textPadding;
+                    //_oldDraw = null;
+                }
                 _Draw.font = font;
                 _Draw.setScale(1*scale*guiScale, 1*scale*guiScale);
-                _Draw.setPositionPx(m_pos.x+textPadding, _oldY + textPadding);
-                _oldY = _oldY + (_Draw.heightPx);
+                _Draw.setPositionPx(_oldX, _oldY + textPadding);
                 _Draw.visible = visible;
-                _Draw.setColor(palete[0], palete[1], palete[2]);
-                //_Draw.alpha = palete[3];
+                _Draw.setColor(line.color.r, line.color.g, line.color.b);
+                _Draw.alpha = textColor.alpha;
                 m_draws.push(_Draw);
 
                 //_pading++;
@@ -301,10 +348,13 @@ class Sprite extends Base {
     }
 }
 
-local tSpr = Sprite(200, 200, 200, 300, "DLG_CONVERSATION");
+local tSpr = Sprite(200, 200, 200, 300, "WHITE");
 addEventHandler("onInit", function () {
     tSpr.visible = true;
-    tSpr.setText("mmm marganec))) YEAHH BOI FUCK ME FUFKCM E. Okay mister whity, ima realy wrong. So, maybe try again?");
+    //tSpr.setText("mmm marganec))) YEAHH BOI FUCK ME FUFKCM E. Okay mister whity, ima realy wrong. So, maybe try again?");
+    //[#F60005]
+    tSpr.setText("[#FFFFFF]dasdasdsd [#FFFFFF]ad [#FFFFFF]auishdoajs [#FFFFFF]doajsd [#FFFFFF]jasoi [#FFFFFF]djaoijd oias jdoiasjd jas djoaisj doias oias js");
+    tSpr.setColor(RGBA(0,0,0,190));
     tSpr.blit();
 })
 
