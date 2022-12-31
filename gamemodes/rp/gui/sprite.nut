@@ -136,50 +136,6 @@ class Sprite extends Base {
         // Update
         blit();
     }
-    // by Patrix code
-    function parse(text, colorParserEnabled = true)
-	{
-        debug("(Class|Sprite): Parsing text start!")
-		local info = []
-
-		local expression = "\\n"
-		expression += (colorParserEnabled) ? "|" + @"\[#[0-9_a-f_A-F]{6,}]" : ""
-
-		local regex = regexp(expression)
-
-		local currentPosition = 0
-		local currentColor = {r = textColor.r, g = textColor.g, b = textColor.b};
-
-		//m_text = "" !!!!!!!!!!!!!
-
-		local result = null
-		while (result = regex.search(text, currentPosition))
-		{
-			local isEOLFound = (result.end - result.begin == 1)
-			local endPosition = (isEOLFound) ? result.end - 1 : result.begin
-
-			local slicedText = text.slice(currentPosition, endPosition)
-
-			if (slicedText != "" || isEOLFound)
-			{
-				info.push({text = slicedText, color = currentColor, newLine = isEOLFound})
-				//m_text += slicedText !!!!!!!!!!!!!
-			}
-
-			currentPosition = result.end
-			currentColor = (isEOLFound) ? currentColor : hexToRgb(text.slice(result.begin + 2, result.end - 1))
-		}
-
-		local slicedText = text.slice(currentPosition, text.len())
-
-		//m_text += slicedText !!!!!!!!!!!!!
-		info.push({text = slicedText, color = currentColor, newLine = false})
-
-		if (info.len())
-			return info
-
-		return null
-	}
     /**
      * Update drawable element
      */
@@ -304,6 +260,49 @@ class Sprite extends Base {
         }
     }
     #private
+    // by Patrix code
+    function parse(text, colorParserEnabled = true) {
+        debug("(Class|Sprite): Parsing text start!")
+		local info = []
+
+		local expression = "\\n"
+		expression += (colorParserEnabled) ? "|" + @"\[#[0-9_a-f_A-F]{6,}]" : ""
+
+		local regex = regexp(expression)
+
+		local currentPosition = 0
+		local currentColor = {r = textColor.r, g = textColor.g, b = textColor.b};
+
+		//m_text = "" !!!!!!!!!!!!!
+
+		local result = null
+		while (result = regex.search(text, currentPosition))
+		{
+			local isEOLFound = (result.end - result.begin == 1)
+			local endPosition = (isEOLFound) ? result.end - 1 : result.begin
+
+			local slicedText = text.slice(currentPosition, endPosition)
+
+			if (slicedText != "" || isEOLFound)
+			{
+				info.push({text = slicedText, color = currentColor, newLine = isEOLFound})
+				//m_text += slicedText !!!!!!!!!!!!!
+			}
+
+			currentPosition = result.end
+			currentColor = (isEOLFound) ? currentColor : hexToRgb(text.slice(result.begin + 2, result.end - 1))
+		}
+
+		local slicedText = text.slice(currentPosition, text.len())
+
+		//m_text += slicedText !!!!!!!!!!!!!
+		info.push({text = slicedText, color = currentColor, newLine = false})
+
+		if (info.len())
+			return info
+
+		return null
+	}
     function _genPosition() {
         // Position context (?)
         debug("(Class#private|Sprite): Generation position started...");
