@@ -28,12 +28,16 @@ class Sprite extends Base {
     scale       = 1;
 
     anchor = [LEFT, TOP]; // [horizontal, vertical]
+    textAnchor = LEFT;
 
     image   = null;
     text    = null;
     font    = "Font_Old_10_White_Hi.tga";
 
-    textPadding = 4;
+    textPadding = {width = 4, height = 4};
+    #readonly:
+    textLines   = -1;
+    textSize    = -1;
 
     color = RGBA(255, 255, 255);
     textColor = RGBA(255, 255, 255);
@@ -89,7 +93,7 @@ class Sprite extends Base {
         //size.width*guiScale*scale
         text = [];
 
-        local _winWidth = size.width*guiScale*scale + textPadding;
+        local _winWidth = size.width*guiScale*scale + textPadding.width;
         local txt = parse(str); //split(str, " ");
 
         //local _drawText = "";
@@ -103,7 +107,7 @@ class Sprite extends Base {
         foreach (elem in txt) {
             _drawShit.text = _drawShit.text + elem.text// + " ";
 
-            if (_drawShit.widthPx <= _winWidth-textPadding) {
+            if (_drawShit.widthPx <= _winWidth-textPadding.width) {
                 //_drawText = _drawText + elem.text// + " ";
 
                 text.push({text = elem.text, color = elem.color, newLine = false});
@@ -183,11 +187,21 @@ class Sprite extends Base {
         // Make new text
         if (text) {
             //local _pading = 1;
-            local _oldY = m_pos.y-textPadding;
+            textLines = 1;
+            textSize = {width = size.width, height = 0}
+
+            local _oldY = m_pos.y-textPadding.height;
             local _oldDraw = null;
-            local _oldX = m_pos.x+textPadding;
+            local _oldX = m_pos.x+textPadding.width;
+
+            local _drawHeightSize = -1;
             foreach (line in text) {
                 local _Draw = Draw(0,0,line.text);
+                _Draw.font = font;
+                _Draw.setScale(1*scale*guiScale, 1*scale*guiScale);
+                // Height font size
+                if (_drawHeightSize == -1)
+                    _drawHeightSize = _Draw.heightPx;
                 // Remembet that
                 if (_oldDraw) {
                     _oldX = _oldX + _oldDraw.widthPx;
@@ -196,18 +210,20 @@ class Sprite extends Base {
                 // other logic
                 if (line.newLine) {
                     _oldY = _oldY + (_Draw.heightPx);
-                    _oldX = m_pos.x+textPadding;
+                    _oldX = m_pos.x+textPadding.width;
                     //_oldDraw = null;
+                    textLines++;
                 }
-                _Draw.font = font;
-                _Draw.setScale(1*scale*guiScale, 1*scale*guiScale);
-                _Draw.setPositionPx(_oldX, _oldY + textPadding);
+                _Draw.setPositionPx(_oldX, _oldY + textPadding.height);
                 _Draw.visible = visible;
                 _Draw.setColor(line.color.r, line.color.g, line.color.b);
                 _Draw.alpha = textColor.alpha;
                 m_draws.push(_Draw);
 
                 //_pading++;
+            }
+            for(local i = 1; i <= textLines; i++) {
+                textSize.height = textSize.height + (_drawHeightSize+textPadding.height)
             }
         }
         debug("(Class|Sprite): Make text...")

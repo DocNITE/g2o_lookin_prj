@@ -65,6 +65,7 @@ const LEFT      = 0;
 const RIGHT     = 1;
 const TOP       = 2;
 const BOTTOM    = 3;
+const CENTER    = 4;
 
 const HORIZONTAL    = 0;
 const VERTICAL      = 1;

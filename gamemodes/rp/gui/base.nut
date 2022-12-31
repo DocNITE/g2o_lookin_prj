@@ -8,17 +8,20 @@ class Base {
         childs = _childs;
     }
 
-    function setParent(obj) {
+    function setParent(obj, noChild = false) {
         if (parent != null) {
             parent.removeChild(this);
         }
         parent = obj;
+
+        if (!noChild && obj != null)
+            obj.addChild(this);
     }
 
     function addChild(obj) {
         if (obj == null) return;
         // rewrite child parent & push
-        obj.setParent(this);
+        obj.setParent(this, true);
         childs.push(obj);
     }
 
